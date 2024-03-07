@@ -43,7 +43,7 @@
           />
         </q-item-section>
       </q-item>
-
+<!-- 
       <div class="row q-px-md" v-if="typebot === 'enabled'">
         <div class="col-12">
           <q-input
@@ -106,7 +106,7 @@
             @input="atualizarConfiguracao('typebotRestart')"
           />
         </div>
-      </div>
+      </div> -->
 
       <!-- <div class="row q-px-md" v-if="typebot === 'enabled'">
         <div class="col-12">

@@ -20,9 +20,9 @@
       </div>
     </div>
     <hr />
-    <!-- <q-btn full-width color="primary " style="width: 100%;margin-top: 0.5rem" icon="mdi-whatsapp" @click="handleNewChat(selectedContact)"
-      :disabled="!selectedContact.number"> -->
-    <q-btn full-width color="primary " style="width: 100%;margin-top: 0.5rem" icon="mdi-whatsapp" @click="handleNewChat(selectedContact)">
+    <q-btn full-width color="primary " style="width: 100%;margin-top: 0.5rem" icon="mdi-whatsapp" @click="handleSaveTicket(selectedContact, 'whatsapp')"
+      :disabled="!selectedContact.number">
+    <!-- <q-btn full-width color="primary " style="width: 100%;margin-top: 0.5rem" icon="mdi-whatsapp" @click="handleNewChat(selectedContact)"> -->
       <span style="margin-left: 10px;">Conversar</span>
     </q-btn>
     <!-- <q-btn full-width color="primary " style="width: 100%;margin-top: 0.5rem" icon="mdi-book-account-outline" @click="$q.screen.lt.md ? (modalNovoTicket = true) : $router.push({ name: 'chat-contatos' })"
@@ -33,8 +33,10 @@
 </template>
 
 <script>
-import { CriarContato, ListarContatos, ListarUrlFoto, EditarContato } from 'src/service/contatos'
+const userId = +localStorage.getItem('userId')
+import { CriarContato, ListarUrlFoto, ObterContatoPeloNumero } from 'src/service/contatos'
 import { CriarTicket } from 'src/service/tickets'
+import { mapGetters } from 'vuex'
 
 export default {
   props: {
@@ -53,68 +55,103 @@ export default {
       pictureUrl: ''
     }
   },
+  computed: {
+    ...mapGetters(['whatsapps'])
+  },
   methods: {
     async fetchContact(contact, number) {
       try {
-        const contatos = await ListarContatos()
-        const contatoEncontrado = contatos.data.contacts.find(contato => contato.number === number[0].number.replace(/\D/g, ''));
-        if (contatoEncontrado){
+        const contato = await ObterContatoPeloNumero(number[0].number.replace(/\D/g, ''))
+        if (contato){
           const fotoPerfil = await ListarUrlFoto({number: number[0].number.replace(/\D/g, '')})
           this.pictureUrl = fotoPerfil.data
-          this.selectedContact = contatoEncontrado
+          this.selectedContact = contato.data
           return
         }
-        else {
-          const fotoPerfil = await ListarUrlFoto({number: number[0].number.replace(/\D/g, '')})
-          this.pictureUrl = fotoPerfil.data
-          const contactObj = {
-            name: contact,
-            number: number[0].number.replace(/\D/g, ''),
-            email: '',
-          }
-          const { data } = await CriarContato(contactObj)
-          this.selectedContact = data
+      } catch (err) {
+        // console.error(err)
+      }
+      try {
+        const fotoPerfil = await ListarUrlFoto({number: number[0].number.replace(/\D/g, '')})
+        this.pictureUrl = fotoPerfil.data
+        const contactObj = {
+          name: contact,
+          number: number[0].number.replace(/\D/g, ''),
+          email: '',
         }
+        const { data } = await CriarContato(contactObj)
+        this.selectedContact = data
       } catch (err) {
         console.error(err)
       }
     },
-    async handleNewChat(selectedContact) {
-      try {
-        const usuario = JSON.parse(localStorage.getItem('usuario'))
-        const { data: ticket } = await CriarTicket({
-          contactId: selectedContact.id,
-          isActiveDemand: true,
-          userId: usuario.userId,
-          channel: 'whatsapp',
-          status: 'open'
-        })
-        await this.$store.commit('SET_HAS_MORE', true)
-        await this.$store.dispatch('AbrirChatMensagens', ticket)
-        this.$q.notify({
-          message: `Atendimento Iniciado || ${ticket.contact.name} - Ticket: ${ticket.id}`,
-          type: 'positive',
-          progress: true,
-          position: 'top',
-          actions: [{
-            icon: 'close',
-            round: true,
-            color: 'white'
-          }]
-        })
-        this.$router.push({ name: 'chat', params: { ticketId: ticket.id } })
-      } catch (err) {
-        if (err.status === 409) {
-          const ticketAtual = JSON.parse(err.data.error)
-          this.abrirAtendimentoExistente(selectedContact, ticketAtual)
-          return
+    async handleSaveTicket (selectedContact, channel) {
+      if (!selectedContact.id) return
+      const itens = []
+      const channelId = null
+      this.whatsapps.forEach(w => {
+        if (w.type === channel) {
+          itens.push({ label: w.name, value: w.id })
         }
-        this.$notificarErro(
-            'Não foi possível abrir o atendimento',
-            err
-          )
-        console.error(err)
-      }
+      })
+
+      this.$q.dialog({
+        title: `Contato: ${selectedContact.name}`,
+        message: 'Selecione o canal para iniciar o atendimento.',
+        options: {
+          type: 'radio',
+          model: channelId,
+          // inline: true
+          isValid: v => !!v,
+          items: itens
+        },
+        ok: {
+          push: true,
+          color: 'positive',
+          label: 'Iniciar'
+        },
+        cancel: {
+          push: true,
+          label: 'Cancelar',
+          color: 'negative'
+        },
+        persistent: true
+      }).onOk(async channelId => {
+        if (!channelId) return
+        // this.loading = true
+        try {
+          const { data: ticket } = await CriarTicket({
+            contactId: selectedContact.id,
+            isActiveDemand: true,
+            userId: userId,
+            channel,
+            channelId,
+            status: 'open'
+          })
+          // await this.$store.commit('SET_HAS_MORE', true)
+          await this.$store.dispatch('AbrirChatMensagens', ticket)
+          this.$q.notify({
+            message: `Atendimento Iniciado || ${ticket.contact.name} - Ticket: ${ticket.id}`,
+            type: 'positive',
+            position: 'top',
+            progress: true,
+            actions: [{
+              icon: 'close',
+              round: true,
+              color: 'white'
+            }]
+          })
+          this.$router.push({ name: 'chat', params: { ticketId: ticket.id } })
+        } catch (error) {
+          if (error.status === 409) {
+            const ticketAtual = JSON.parse(error.data.error)
+            this.abrirAtendimentoExistente(selectedContact, ticketAtual)
+            return
+          }
+          this.$notificarErro('Ocorreu um erro!', error)
+        }
+        // this.loading = false
+      })
     },
     abrirAtendimentoExistente (contato, ticket) {
       this.$q.dialog({
@@ -151,6 +188,7 @@ export default {
       this.$store.dispatch('AbrirChatMensagens', ticket)
     },
     getInfoVCard() {
+
       const array = this.vcard.split('\n')
       const obj = []
       let contact = ''

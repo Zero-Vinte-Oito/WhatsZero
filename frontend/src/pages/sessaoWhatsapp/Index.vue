@@ -176,7 +176,7 @@
               class="absolute-bottom-right"
             >
               <q-tooltip>
-                Deletar conexáo
+                Deletar conexão
               </q-tooltip>
             </q-btn>
             <template v-if="item.type === 'whatsapp'">

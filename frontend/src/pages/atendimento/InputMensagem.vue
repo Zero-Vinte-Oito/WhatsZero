@@ -254,10 +254,15 @@
       <template v-else>
         <div class="full-width items-center row justify-end">
           <q-skeleton animation="pulse-y" class="col-grow q-mx-md" type="text" />
-          <div style="width: 200px" class="flex flex-center items-center" v-if="isRecordingAudio">
+          <div style="width: 200px" class="flex flex-center items-center" v-if="isRecordingAudio && ticketFocado.channel !== 'waba'">
             <q-btn flat icon="mdi-close" color="negative" @click="handleCancelRecordingAudio" class="bg-padrao btn-rounded q-mx-xs" />
             <RecordingTimer class="text-bold" :class="{ 'text-white': $q.dark.isActive }" />
             <q-btn flat icon="mdi-send-circle-outline" color="positive" @click="handleStopRecordingAudio" class="bg-padrao btn-rounded q-mx-xs" />
+          </div>
+          <div style="width: 200px" class="flex flex-center items-center" v-if="isRecordingAudio && ticketFocado.channel === 'waba'">
+            <q-btn flat icon="mdi-close" color="negative" @click="handleCancelRecordingAudio" class="bg-padrao btn-rounded q-mx-xs" />
+            <RecordingTimer class="text-bold" :class="{ 'text-white': $q.dark.isActive }" />
+            <q-btn flat icon="mdi-send-circle-outline" color="positive" @click="handleStopRecordingAudioWaba" class="bg-padrao btn-rounded q-mx-xs" />
           </div>
         </div>
       </template>
@@ -810,6 +815,7 @@ export default defineComponent({
       }
     },
     async handleStopRecordingAudio() {
+      console.log(this.ticketFocado)
       this.loading = true
       try {
         const [, blob] = await Mp3Recorder.stop().getMp3()
@@ -829,6 +835,55 @@ export default defineComponent({
         }
         const ticketId = this.ticketFocado.id
         await EnviarMensagemTexto(ticketId, formData)
+        this.arquivos = []
+        this.textChat = ''
+        this.$emit('update:replyingMessage', null)
+        this.abrirFilePicker = false
+        this.abrirModalPreviewImagem = false
+        this.isRecordingAudio = false
+        this.loading = false
+        setTimeout(() => {
+          this.scrollToBottom()
+        }, 300)
+      } catch (error) {
+        this.isRecordingAudio = false
+        this.loading = false
+        this.$notificarErro('Ocorreu um erro!', error)
+      }
+    },
+    async handleStopRecordingAudioWaba() {
+      console.log('waba')
+      this.loading = true
+      try {
+        const [, blob] = await Mp3Recorder.stop().getMp3()
+        if (blob.size < 10000) {
+          this.loading = false
+          this.isRecordingAudio = false
+          return
+        }
+
+        const formData = new FormData()
+        const filename = `${new Date().getTime()}.mp3`
+        // formData.append('medias', blob, filename)
+        // formData.append('body', filename)
+        // formData.append('fromMe', true)
+        // if (this.isScheduleDate) {
+        //   formData.append('scheduleDate', this.scheduleDate)
+        // }
+        // const ticketId = this.ticketFocado.id
+
+        formData.append('fromMe', true)
+        formData.append('medias', blob, filename)
+        formData.append('body', filename)
+        formData.append('idFront', uid())
+        formData.append('tokenApi', this.ticketFocado.whatsapp.tokenAPI)
+        formData.append('from', this.ticketFocado.contact.number)
+        formData.append('tickedId', this.ticketFocado.id)
+        if (this.isScheduleDate) {
+          formData.append('scheduleDate', this.scheduleDate)
+        }
+
+        await EnviarArquivoWaba(formData)
         this.arquivos = []
         this.textChat = ''
         this.$emit('update:replyingMessage', null)
@@ -971,7 +1026,6 @@ export default defineComponent({
       if (username && this.sign) {
         mensagem = `*${username}*:\n ${mensagem}`
       }
-      console.log(this.ticketFocado.whatsapp)
       const message = {
         read: 1,
         fromMe: true,
@@ -1001,7 +1055,6 @@ export default defineComponent({
             }
           }
           else {
-            console.log(this.ticketFocado)
             const data = this.prepararMensagemTextoWABA()
             await EnviarTextoWaba(data)
           }

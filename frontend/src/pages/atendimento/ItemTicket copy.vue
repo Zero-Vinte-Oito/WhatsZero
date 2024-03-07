@@ -59,7 +59,7 @@
         </q-avatar>
 
       </q-item-section>
-      <q-item-section id="ListItemsTicket" >
+      <q-item-section id="ListItemsTicket">
         <q-item-label class="text-bold"
           lines="1">
           {{ !ticket.name ? ticket.contact.name : ticket.name }}
@@ -104,12 +104,7 @@
               {{wallet.wallet}}
             </q-tooltip>
           </q-icon>
-          <!-- <span class="q-ml-sm text-bold" :style="{ color: (ticket.queue || obterNomeFila(ticket)) ? 'black' : '' }"
-          :color="$q.dark.isActive ? 'blue-9' : 'blue-2'"
-          > -->
-          <span class="q-ml-sm text-bold"
-          :color="$q.dark.isActive ? 'white ' : 'black'"
-          >
+          <span class="q-ml-sm text-bold" :style="{ color: (ticket.queue || obterNomeFila(ticket)) ? 'black' : '' }">
             {{ `${ticket.queue || obterNomeFila(ticket) || ''}` }}
           </span>
           <!-- <span class="q-ml-sm text-bold" :style="{ color: 'black' }">

@@ -155,6 +155,38 @@
                 <q-tooltip content-class="bg-padrao text-grey-9 text-bold"> Download </q-tooltip>
               </q-btn>
             </template> -->
+            <template v-if="mensagem.mediaType === 'sticker'">
+              <!-- @click="buscarImageCors(mensagem.mediaUrl)" -->
+              <q-img
+                @click="
+                  urlMedia = mensagem.mediaUrl
+                  abrirModalImagem = true
+                "
+                :src="mensagem.mediaUrl"
+                spinner-color="primary"
+                height="150px"
+                width="330px"
+                class="q-mt-md"
+                style="cursor: pointer"
+              />
+              <VueEasyLightbox moveDisabled :visible="abrirModalImagem" :imgs="urlMedia" :index="mensagem.ticketId || 1" @hide="abrirModalImagem = false" />
+            </template>
+            <template v-if="mensagem.mediaType === 'location'">
+              <!-- @click="buscarImageCors(mensagem.mediaUrl)" -->
+              <q-img
+                @click="
+                  urlIframe = mensagem.body;
+                  abrirModalIframe = true;
+                "
+                src="/location.jpg"
+                spinner-color="primary"
+                height="150px"
+                width="330px"
+                class="q-mt-md"
+                style="cursor: pointer"
+              />
+              <VueEasyLightbox moveDisabled :visible="abrirModalImagem" :imgs="urlMedia" :index="mensagem.ticketId || 1" @hide="abrirModalImagem = false" />
+            </template>
             <template v-if="mensagem.mediaType === 'image'">
               <!-- @click="buscarImageCors(mensagem.mediaUrl)" -->
               <q-img
@@ -279,6 +311,16 @@
         </q-chat-message>
       </div>
     </transition-group>
+    <q-dialog v-model="abrirModalIframe">
+      <q-card>
+        <q-card-section>
+          <iframe :src="urlIframe" width="100%" height="500px" frameborder="0"></iframe>
+        </q-card-section>
+        <q-card-actions>
+          <q-btn flat label="Fechar" color="primary" @click="abrirModalIframe = false" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
@@ -339,6 +381,8 @@ export default {
   // },
   data() {
     return {
+      abrirModalIframe: false,
+      urlIframe: '',
       abrirModalImagem: false,
       urlMedia: '',
       identificarMensagem: null,
@@ -358,80 +402,80 @@ export default {
     VCard
   },
   methods: {
-    async fetchContact(contact, waid) {
-      try {
-        const contatos = await ListarContatos()
-        const contatoEncontrado = contatos.data.contacts.find(contato => contato.number === waid);
-        if (contatoEncontrado) return;
-        const contactObj = {
-          name: contact,
-          number: waid.replace(/\D/g, ''),
-          email: ''
-        }
-        const { data } = await CriarContato(contactObj)
-        console.log(contatoEncontrado)
-        return data
-      } catch (err) {
-        // console.error(err)
-      }
-    },
-    extrairLinha(msg, propriedade) {
-      const linhas = msg.split('\n');
-      const fn = linhas.find(linha => linha.startsWith('FN'))
-      const linhaTel = linhas.find(linha => linha.includes('TEL'))
-      const waid = linhaTel.match(/waid=([\d]+)/)[1];
-      this.fetchContact(fn.replace('FN:', ''), waid);
-      const linhaEncontrada = linhas.find(linha => linha.startsWith(propriedade));
-      const linhaEncontradaTel = linhas.find(linha => linha.includes(propriedade));
-      if (propriedade === 'TEL' && linhaEncontradaTel) {
-        const indiceMais = linhaEncontradaTel.indexOf('+');
-        return linhaEncontradaTel.slice(indiceMais);
-      }
-      return linhaEncontrada.replace(propriedade, '');
-    },
-    async handleNewChat(msg) {
-      const contatos = await ListarContatos()
-      const linhas = msg.split('\n');
-      const linhaTel = linhas.find(linha => linha.includes('TEL'))
-      const waid = linhaTel.match(/waid=([\d]+)/)[1];
-      const contatoEncontrado = contatos.data.contacts.find(contato => contato.number === waid);
-      try {
-        const usuario = JSON.parse(localStorage.getItem('usuario'))
-        const { data: ticket } = await CriarTicket({
-          contactId: contatoEncontrado.id,
-          isActiveDemand: true,
-          userId: usuario.userId,
-          channel: 'whatsapp',
-          // channelId: 1,
-          status: 'open'
-        })
-        await this.$store.commit('SET_HAS_MORE', true)
-        await this.$store.dispatch('AbrirChatMensagens', ticket)
-        this.$q.notify({
-          message: `Atendimento Iniciado || ${ticket.contact.name} - Ticket: ${ticket.id}`,
-          type: 'positive',
-          progress: true,
-          position: 'top',
-          actions: [{
-            icon: 'close',
-            round: true,
-            color: 'white'
-          }]
-        })
-        this.$router.push({ name: 'chat', params: { ticketId: ticket.id } })
-      } catch (err) {
-        if (err.status === 409) {
-          const ticketAtual = JSON.parse(err.data.error)
-          this.abrirAtendimentoExistente(contatoEncontrado, ticketAtual)
-          return
-        }
-        this.$notificarErro(
-            'Não foi possível abrir o atendimento',
-            err
-          )
-        console.error(err)
-      }
-    },
+    // async fetchContact(contact, waid) {
+    //   try {
+    //     const contatos = await ListarContatos()
+    //     const contatoEncontrado = contatos.data.contacts.find(contato => contato.number === waid);
+    //     if (contatoEncontrado) return;
+    //     const contactObj = {
+    //       name: contact,
+    //       number: waid.replace(/\D/g, ''),
+    //       email: ''
+    //     }
+    //     const { data } = await CriarContato(contactObj)
+    //     console.log(contatoEncontrado)
+    //     return data
+    //   } catch (err) {
+    //     // console.error(err)
+    //   }
+    // },
+    // extrairLinha(msg, propriedade) {
+    //   const linhas = msg.split('\n');
+    //   const fn = linhas.find(linha => linha.startsWith('FN'))
+    //   const linhaTel = linhas.find(linha => linha.includes('TEL'))
+    //   const waid = linhaTel.match(/waid=([\d]+)/)[1];
+    //   this.fetchContact(fn.replace('FN:', ''), waid);
+    //   const linhaEncontrada = linhas.find(linha => linha.startsWith(propriedade));
+    //   const linhaEncontradaTel = linhas.find(linha => linha.includes(propriedade));
+    //   if (propriedade === 'TEL' && linhaEncontradaTel) {
+    //     const indiceMais = linhaEncontradaTel.indexOf('+');
+    //     return linhaEncontradaTel.slice(indiceMais);
+    //   }
+    //   return linhaEncontrada.replace(propriedade, '');
+    // },
+    // async handleNewChat(msg) {
+    //   const contatos = await ListarContatos()
+    //   const linhas = msg.split('\n');
+    //   const linhaTel = linhas.find(linha => linha.includes('TEL'))
+    //   const waid = linhaTel.match(/waid=([\d]+)/)[1];
+    //   const contatoEncontrado = contatos.data.contacts.find(contato => contato.number === waid);
+    //   try {
+    //     const usuario = JSON.parse(localStorage.getItem('usuario'))
+    //     const { data: ticket } = await CriarTicket({
+    //       contactId: contatoEncontrado.id,
+    //       isActiveDemand: true,
+    //       userId: usuario.userId,
+    //       channel: 'whatsapp',
+    //       // channelId: 1,
+    //       status: 'open'
+    //     })
+    //     await this.$store.commit('SET_HAS_MORE', true)
+    //     await this.$store.dispatch('AbrirChatMensagens', ticket)
+    //     this.$q.notify({
+    //       message: `Atendimento Iniciado || ${ticket.contact.name} - Ticket: ${ticket.id}`,
+    //       type: 'positive',
+    //       progress: true,
+    //       position: 'top',
+    //       actions: [{
+    //         icon: 'close',
+    //         round: true,
+    //         color: 'white'
+    //       }]
+    //     })
+    //     this.$router.push({ name: 'chat', params: { ticketId: ticket.id } })
+    //   } catch (err) {
+    //     if (err.status === 409) {
+    //       const ticketAtual = JSON.parse(err.data.error)
+    //       this.abrirAtendimentoExistente(contatoEncontrado, ticketAtual)
+    //       return
+    //     }
+    //     this.$notificarErro(
+    //         'Não foi possível abrir o atendimento',
+    //         err
+    //       )
+    //     console.error(err)
+    //   }
+    // },
     abrirAtendimentoExistente (contato, ticket) {
       this.$q.dialog({
         title: 'Atenção!!',

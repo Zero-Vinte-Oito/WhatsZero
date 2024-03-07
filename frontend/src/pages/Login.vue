@@ -35,6 +35,7 @@
                 <div class="text-h6">Bem vindo!</div>
                 <div>
                   <q-input
+                    :color="$q.dark.isActive ? 'white ' : 'black'"
                     class="q-mb-md"
                     clearable
                     v-model="form.email"
@@ -55,6 +56,7 @@
                   </q-input>
 
                   <q-input
+                    :color="$q.dark.isActive ? 'white ' : 'black'"
                     outlined
                     v-model="form.password"
                     :type="isPwd ? 'password' : 'text'"

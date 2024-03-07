@@ -425,7 +425,7 @@
               <q-card-section class="text-center">
                 <q-avatar style="border: 1px solid #9e9e9ea1 !important; width: 100px; height: 100px">
                   <q-icon name="mdi-account" style="width: 100px; height: 100px" size="6em" color="grey-5" v-if="!ticketFocado.contact.profilePicUrl" />
-                  <q-img :src="ticketFocado.contact.profilePicUrl" style="width: 100px; height: 100px" class="blur-effect">
+                  <q-img :src="ticketFocado.contact.profilePicUrl" style="width: 100px; height: 100px">
                     <template v-slot:error>
                       <q-icon name="mdi-account" size="1.5em" color="grey-5" />
                     </template>

@@ -133,91 +133,173 @@
 
         
         <div class="row q-my-md">
-          <div class="text-h6" v-if="chatgptAtivo === 'enabled' && whatsapp.type === 'whatsapp' ">ChatGPT</div>
-          <div class="col-12" v-if="chatgptAtivo === 'enabled' && whatsapp.type === 'whatsapp' ">
-            <label class="text-caption">Opção #1: Prompt ChatGPT:</label>
-            <textarea ref="inputPrompt"
-              style="min-height: 15vh; max-height: 15vh;"
-              class="q-pa-sm bg-white full-width"
-              placeholder="Digite o Prompt"
-              autogrow
+          <div>
+            <div class="text-h8" v-if="chatgptAtivo === 'enabled' && whatsapp.type === 'whatsapp' " style="margin-top: 20px;">ChatGPT</div>
+            <div class="col-12" v-if="chatgptAtivo === 'enabled' && whatsapp.type === 'whatsapp' ">
+              <label class="text-caption">ChatGPT API Key:</label>
+              <input ref="apiKey"
+                class="q-pa-sm bg-white full-width"
+                placeholder="Digite a API Key"
+                dense
+                outlined
+                v-model="whatsapp.chatgptApiKey" />
+            </div>
+            <div class="col-12" v-if="chatgptAtivo === 'enabled' && whatsapp.type === 'whatsapp' ">
+              <label class="text-caption">ChatGPT Organization Key:</label>
+              <input ref="orgKey"
+                class="q-pa-sm bg-white full-width"
+                placeholder="Digite a Organization Key"
+                dense
+                outlined
+                v-model="whatsapp.chatgptOrganizationId" />
+            </div>
+            <div class="col-12" v-if="chatgptAtivo === 'enabled' && whatsapp.type === 'whatsapp' ">
+              <label class="text-caption">Palavra para desligar o ChatGPT</label>
+              <input ref="sairGpt"
+                class="q-pa-sm bg-white full-width"
+                placeholder="Digite a Palavra para desligar o ChatGPT"
+                dense
+                outlined
+                v-model="whatsapp.chatgptOff" />
+            </div>
+            <div class="col-12" v-if="chatgptAtivo === 'enabled' && whatsapp.type === 'whatsapp' ">
+              <label class="text-caption">Opção #1: Prompt ChatGPT:</label>
+              <textarea ref="inputPrompt"
+                style="min-height: 15vh; max-height: 15vh;"
+                class="q-pa-sm bg-white full-width"
+                placeholder="Digite o Prompt"
+                autogrow
+                dense
+                outlined
+                v-model="whatsapp.chatgptPrompt" />
+            </div>
+            <label v-if="chatgptAtivo === 'enabled' && whatsapp.type === 'whatsapp' " class="text-caption">Após mudar o Prompt, o histórico do ChatGPT deve ser restaurado clicando no botão abaixo:</label>
+            <q-btn round
+              flat
               dense
-              outlined
-              v-model="whatsapp.chatgptPrompt" />
-          </div>
-          <label v-if="chatgptAtivo === 'enabled' && whatsapp.type === 'whatsapp' " class="text-caption">Após mudar o Prompt, o histórico do ChatGPT deve ser restaurado clicando no botão abaixo:</label>
-          <q-btn round
-            flat
-            dense
-            @click="limparGpts()"
-            v-if="chatgptAtivo === 'enabled' && whatsapp.type === 'whatsapp' "
-            >
-            <q-icon size="2em"
-              name="mdi-restore" />
-            <q-tooltip>
-              Restaurar Histórico ChatGPT
-            </q-tooltip>
-          </q-btn>
-          <div class="col-12" v-if="chatgptAtivo === 'enabled' && whatsapp.type === 'whatsapp' ">
-            <label class="text-caption">Opção #2: Assistants ChatGPT:</label>
-            <input ref="inputAssistant"
-              class="q-pa-sm bg-white full-width"
-              placeholder="Digite a ID do Assistent"
+              @click="limparGpts()"
+              v-if="chatgptAtivo === 'enabled' && whatsapp.type === 'whatsapp' "
+              >
+              <q-icon size="2em"
+                name="mdi-restore" />
+              <q-tooltip>
+                Restaurar Histórico ChatGPT
+              </q-tooltip>
+            </q-btn>
+            <div class="col-12" v-if="chatgptAtivo === 'enabled' && whatsapp.type === 'whatsapp' ">
+              <label class="text-caption">Opção #2: Assistants ChatGPT:</label>
+              <input ref="inputAssistant"
+                class="q-pa-sm bg-white full-width"
+                placeholder="Digite a ID do Assistent"
+                dense
+                outlined
+                v-model="whatsapp.assistantId" />
+            </div>
+            <label v-if="chatgptAtivo === 'enabled' && whatsapp.type === 'whatsapp' " class="text-caption">Ao usar o Assistente o Prompt será desconsiderado</label>
+            <q-btn round
+              flat
               dense
-              outlined
-              v-model="whatsapp.assistantId" />
+              @click="assistenteNulo()"
+              v-if="chatgptAtivo === 'enabled' && whatsapp.type === 'whatsapp' "
+              >
+              <q-icon size="2em"
+                name="mdi-restore" />
+              <q-tooltip>
+                Remover Assistente
+              </q-tooltip>
+            </q-btn>
           </div>
-          <label v-if="chatgptAtivo === 'enabled' && whatsapp.type === 'whatsapp' " class="text-caption">Ao usar o Assistente o Prompt será desconsiderado</label>
-          <q-btn round
-            flat
-            dense
-            @click="assistenteNulo()"
-            v-if="chatgptAtivo === 'enabled' && whatsapp.type === 'whatsapp' "
-            >
-            <q-icon size="2em"
-              name="mdi-restore" />
-            <q-tooltip>
-              Remover Assistente
-            </q-tooltip>
-          </q-btn>
-          <div class="text-h6" v-if="typebotAtivo === 'enabled' && whatsapp.type === 'whatsapp' ">TypeBOT</div>
-          <div class="col-12" v-if="typebotAtivo === 'enabled' && whatsapp.type === 'whatsapp' ">
-            <label class="text-caption">Url do Typebot:</label>
-            <input ref="inputAssistant"
-              class="q-pa-sm bg-white full-width"
-              placeholder="Digite a Url do Typebot"
-              dense
-              outlined
-              v-model="whatsapp.typebotUrl" />
+          <div>
+            <div class="text-h8" v-if="typebotAtivo === 'enabled' && whatsapp.type === 'whatsapp' " style="margin-top: 20px;">TypeBOT</div>
+            <div class="col-12" v-if="typebotAtivo === 'enabled' && whatsapp.type === 'whatsapp' ">
+              <label class="text-caption">Url do Typebot:</label>
+              <input ref="inputAssistant"
+                class="q-pa-sm bg-white full-width"
+                placeholder="Digite a Url do Typebot"
+                dense
+                outlined
+                v-model="whatsapp.typebotUrl" />
+            </div>
+            <div class="col-12" v-if="typebotAtivo === 'enabled' && whatsapp.type === 'whatsapp' ">
+              <label class="text-caption">Nome do Bot no Typebot:</label>
+              <input ref="inputAssistant"
+                class="q-pa-sm bg-white full-width"
+                placeholder="Digite o Nome do Bot no Typebot"
+                dense
+                outlined
+                v-model="whatsapp.typebotName" />
+            </div>
+            <div class="col-12" v-if="typebotAtivo === 'enabled' && whatsapp.type === 'whatsapp' ">
+              <label class="text-caption">Palavra para reiniciar o Typebot:</label>
+              <input ref="inputAssistant"
+                class="q-pa-sm bg-white full-width"
+                placeholder="Digite a Palavra para reiniciar o Typebot"
+                dense
+                outlined
+                v-model="whatsapp.typebotRestart" />
+            </div>
+            <div class="col-12" v-if="typebotAtivo === 'enabled' && whatsapp.type === 'whatsapp' ">
+              <label class="text-caption">Palavra para desligar o Typebot:</label>
+              <input ref="inputAssistant"
+                class="q-pa-sm bg-white full-width"
+                placeholder="Digite a Palavra para desligar o Typebot"
+                dense
+                outlined
+                v-model="whatsapp.typebotOff" />
+            </div>
           </div>
-          <div class="col-12" v-if="typebotAtivo === 'enabled' && whatsapp.type === 'whatsapp' ">
-            <label class="text-caption">Nome do Bot no Typebot:</label>
-            <input ref="inputAssistant"
-              class="q-pa-sm bg-white full-width"
-              placeholder="Digite o Nome do Bot no Typebot"
-              dense
-              outlined
-              v-model="whatsapp.typebotName" />
+          <div>
+            <div class="text-h8" v-if="dialogflowAtivo === 'enabled' && whatsapp.type === 'whatsapp' " style="margin-top: 20px;">DialogFlow</div>
+            <div class="col-12" v-if="dialogflowAtivo === 'enabled' && whatsapp.type === 'whatsapp' ">
+              <label class="text-caption">Project ID:</label>
+              <input ref="projectId"
+                class="q-pa-sm bg-white full-width"
+                placeholder="Digite o Project ID"
+                dense
+                outlined
+                v-model="whatsapp.dialogflowProjectId" />
+            </div>
+            <div class="col-12" v-if="dialogflowAtivo === 'enabled' && whatsapp.type === 'whatsapp' ">
+              <label class="text-caption">Idioma (Language):</label>
+              <input ref="lang"
+                class="q-pa-sm bg-white full-width"
+                placeholder="Digite o Idioma"
+                dense
+                outlined
+                v-model="whatsapp.dialogflowLanguage" />
+            </div>
+            <div class="col-12" v-if="dialogflowAtivo === 'enabled' && whatsapp.type === 'whatsapp' ">
+              <label class="text-caption">Palavra para desligar o DialogFlow</label>
+              <input ref="sairDialog"
+                class="q-pa-sm bg-white full-width"
+                placeholder="Digite a Palavra para desligar o DialogFlow"
+                dense
+                outlined
+                v-model="whatsapp.dialogflowOff" />
+            </div>
+            <div class="col-12" v-if="dialogflowAtivo === 'enabled' && whatsapp.type === 'whatsapp' ">
+              <label class="text-caption">Nome do Arquivo Json</label>
+              <input ref="jsonNameDialog"
+                class="q-pa-sm bg-white full-width"
+                placeholder="Digite a Nome do Arquivo Json"
+                dense
+                outlined
+                v-model="whatsapp.dialogflowJsonFilename" />
+            </div>
+            <div class="col-12" v-if="dialogflowAtivo === 'enabled' && whatsapp.type === 'whatsapp' ">
+              <label class="text-caption">Conteúdo do Arquivo Json</label>
+              <textarea ref="jsonDialog"
+                style="min-height: 15vh; max-height: 15vh;"
+                class="q-pa-sm bg-white full-width"
+                placeholder="Copie o Conteúdo do Arquivo Json"
+                autogrow
+                dense
+                outlined
+                v-model="whatsapp.dialogflowJson" />
+            </div>
           </div>
-          <div class="col-12" v-if="typebotAtivo === 'enabled' && whatsapp.type === 'whatsapp' ">
-            <label class="text-caption">Palavra para reiniciar o Typebot:</label>
-            <input ref="inputAssistant"
-              class="q-pa-sm bg-white full-width"
-              placeholder="Digite a Palavra para reiniciar o Typebot"
-              dense
-              outlined
-              v-model="whatsapp.typebotRestart" />
-          </div>
-          <div class="col-12" v-if="typebotAtivo === 'enabled' && whatsapp.type === 'whatsapp' ">
-            <label class="text-caption">Palavra para desligar o Typebot:</label>
-            <input ref="inputAssistant"
-              class="q-pa-sm bg-white full-width"
-              placeholder="Digite a Palavra para desligar o Typebot"
-              dense
-              outlined
-              v-model="whatsapp.typebotOff" />
-          </div>
-          <div class="col-12">
+          <div class="text-h8" v-if="whatsapp.type !== 'waba' " style="margin-top: 20px;">Despedida</div>
+          <div class="col-12" v-if="whatsapp.type !== 'waba' ">
             <label class="text-caption">Mensagem de Despedida do Atendimento:</label>
             <textarea ref="inputFarewellMessage"
               style="min-height: 15vh; max-height: 15vh;"
@@ -229,6 +311,7 @@
               v-model="whatsapp.farewellMessage" />
           </div>
           <q-btn round
+            v-if="whatsapp.type !== 'waba' "
             flat
             dense>
             <q-icon size="2em"
@@ -249,6 +332,7 @@
               </q-list>
             </q-menu>
           </q-btn>
+
         </div>
       </q-card-section>
       <q-card-actions align="center"
@@ -270,12 +354,12 @@
 
 <script>
 import { required, minLength, maxLength } from 'vuelidate/lib/validators'
-import { UpdateWhatsapp, CriarWhatsapp } from 'src/service/sessoesWhatsapp'
+import { UpdateWhatsapp, CriarWhatsapp, DeletarWhatsapp } from 'src/service/sessoesWhatsapp'
 import cInput from 'src/components/cInput.vue'
 import { copyToClipboard, Notify } from 'quasar'
 import { ListarConfiguracoes } from 'src/service/configuracoes'
 import { LimpartHistoricoGpt } from 'src/service/tickets'
-import { VerificarToken, VerificarTelefone } from 'src/service/waba'
+import { VerificarTelefone } from 'src/service/waba'
 
 export default {
   components: { cInput },
@@ -300,6 +384,7 @@ export default {
       isEdit: false,
       chatgptAtivo: 'disabled',
       typebotAtivo: 'disabled',
+      dialogflowAtivo: 'disabled',
       whatsapp: {
         name: '',
         isDefault: false,
@@ -313,11 +398,19 @@ export default {
         farewellMessage: '',
         wabaBSP: '360',
         chatgptPrompt: '',
+        chatgptApiKey: '',
+        chatgptOrganizationId: '',
+        chatgptOff: '',
         assistantId: '',
         typebotRestart: '',
         typebotOff: '',
         typebotName: '',
         typebotUrl: '',
+        dialogflowJsonFilename: '',
+        dialogflowProjectId: '',
+        dialogflowLanguage: '',
+        dialogflowOff: '',
+        dialogflowJson: '',
         wordlist: 'disabled'
       },
       optionsWhatsappsTypes: [
@@ -363,6 +456,8 @@ export default {
       this.chatgptAtivo = chatgptConfig.value
       const typebotConfig = data.find(config => config.key === 'typebot')
       this.typebotAtivo = typebotConfig.value
+      const dialogflowConfig = data.find(config => config.key === 'dialogflow')
+      this.dialogflowAtivo = dialogflowConfig.value
     },
     copy (text) {
       copyToClipboard(text)
@@ -404,35 +499,6 @@ export default {
       }
     },
     async handleSaveWhatsApp (whatsapp) {
-      if(whatsapp.type === "waba"){
-        try {
-          const data = {
-            tokenAPI: this.whatsapp.tokenAPI,
-            wabaId: this.whatsapp.wabaId,
-            bmToken: this.whatsapp.bmToken
-          }
-          const response = await VerificarTelefone(data);
-        } catch (error) {
-          if (error.response && error.response.status === 400) {
-            this.$q.notify({
-              type: 'warning',
-              progress: true,
-              position: 'top',
-              message: 'Ops! Dados inválidos, verifique se os identificadores estão corretos...',
-              actions: [{ icon: 'close', round: true, color: 'white' }]
-            });
-          } else {
-            this.$q.notify({
-              type: 'warning',
-              progress: true,
-              position: 'top',
-              message: 'Ops! Dados inválidos, verifique se os identificadores estão corretos...',
-              actions: [{ icon: 'close', round: true, color: 'white' }]
-            });
-            return
-          }
-        }
-      }
       this.$v.whatsapp.$touch()
       if (this.$v.whatsapp.$error) {
         return this.$q.notify({
@@ -450,8 +516,66 @@ export default {
       try {
         if (this.whatsAppEdit.id) {
           await UpdateWhatsapp(this.whatsAppEdit.id, whatsapp)
+          if(whatsapp.type === "waba"){
+            try {
+              const data = {
+                tokenAPI: this.whatsapp.tokenAPI,
+                wabaId: this.whatsapp.wabaId,
+                bmToken: this.whatsapp.bmToken
+              }
+              const response = await VerificarTelefone(data);
+            } catch (error) {
+              if (error.response && error.response.status === 400) {
+                this.$q.notify({
+                  type: 'warning',
+                  progress: true,
+                  position: 'top',
+                  message: 'Ops! Dados inválidos, verifique se os identificadores estão corretos...',
+                  actions: [{ icon: 'close', round: true, color: 'white' }]
+                });
+              } else {
+                this.$q.notify({
+                  type: 'warning',
+                  progress: true,
+                  position: 'top',
+                  message: 'Ops! Dados inválidos, verifique se os identificadores estão corretos...',
+                  actions: [{ icon: 'close', round: true, color: 'white' }]
+                });
+                return
+              }
+            }
+          }
         } else {
           await CriarWhatsapp(whatsapp)
+          if(whatsapp.type === "waba"){
+            try {
+              const data = {
+                tokenAPI: this.whatsapp.tokenAPI,
+                wabaId: this.whatsapp.wabaId,
+                bmToken: this.whatsapp.bmToken
+              }
+              const response = await VerificarTelefone(data);
+            } catch (error) {
+              if (error.response && error.response.status === 400) {
+                this.$q.notify({
+                  type: 'warning',
+                  progress: true,
+                  position: 'top',
+                  message: 'Ops! Dados inválidos, verifique se os identificadores estão corretos...',
+                  actions: [{ icon: 'close', round: true, color: 'white' }]
+                });
+              } else {
+                this.$q.notify({
+                  type: 'warning',
+                  progress: true,
+                  position: 'top',
+                  message: 'Ops! Dados inválidos, verifique se os identificadores estão corretos...',
+                  actions: [{ icon: 'close', round: true, color: 'white' }]
+                });
+                return
+              }
+            }
+          }          
         }
         this.$q.notify({
           type: 'positive',

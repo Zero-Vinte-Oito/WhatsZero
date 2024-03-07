@@ -44,7 +44,7 @@
         </q-item-section>
       </q-item>
 
-      <div class="row q-px-md" v-if="dialogflow === 'enabled'">
+      <!-- <div class="row q-px-md" v-if="dialogflow === 'enabled'">
         <div class="col-12">
           <q-input
             v-model="dialogflowJsonFilename"
@@ -122,7 +122,7 @@
             @input="atualizarConfiguracao('dialogflowOff')"
           />
         </div>
-      </div>
+      </div> -->
 
       <!-- <div class="row q-px-md" v-if="dialogflow === 'enabled'">
         <div class="col-12">

@@ -44,7 +44,7 @@
         </q-item-section>
       </q-item>
 
-      <div class="row q-px-md" v-if="chatgpt === 'enabled'">
+      <!-- <div class="row q-px-md" v-if="chatgpt === 'enabled'">
         <div class="col-12">
           <q-input
             v-model="chatgptApiKey"
@@ -58,7 +58,7 @@
             @input="atualizarConfiguracao('chatgptApiKey')"
           />
         </div>
-      </div>
+      </div> -->
 
       <!-- <div class="row q-px-md" v-if="chatgpt === 'enabled'">
         <div class="col-12">
@@ -76,7 +76,7 @@
         </div>
       </div> -->
 
-      <div class="row q-px-md" v-if="chatgpt === 'enabled'">
+      <!-- <div class="row q-px-md" v-if="chatgpt === 'enabled'">
         <div class="col-12">
           <q-input
             v-model="chatgptOrganizationId"
@@ -106,7 +106,7 @@
             @input="atualizarConfiguracao('chatgptOff')"
           />
         </div>
-      </div>
+      </div> -->
 
       <!-- <div class="row q-px-md" v-if="chatgpt === 'enabled'">
         <div class="col-12">

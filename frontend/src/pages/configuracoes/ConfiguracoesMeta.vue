@@ -25,6 +25,11 @@
               </span>
               {{ montarUrlIntegração() }}
             </p>
+            <p v-if="this.webhookChecked" class="text-weight-medium text-nowrap q-pr-md blur-effect">
+              <span class="text-bold">Verificado em:
+              </span>
+              {{ formatarDataBrasil(this.webhookChecked) }}
+            </p>
         </div>
       </div>
 
@@ -34,8 +39,10 @@
 
 <script>
 const usuario = JSON.parse(localStorage.getItem('usuario'))
-import { ListarTenantPorId, ListarTenantPorAsaas, AlterarTenantMeta } from 'src/service/tenants'
+import { ListarTenantPorId, AlterarTenantMeta } from 'src/service/tenants'
 import { defineComponent } from 'vue'
+import { format } from 'date-fns'
+import { ptBR } from 'date-fns/locale'
 
 export default defineComponent({
   name: 'IndexConfiguracoes',
@@ -43,16 +50,21 @@ export default defineComponent({
     return {
       usuario,
       metaToken: '',
+      webhookChecked: '',
       loading: false,
       userProfile: 'user'
     }
   },
   computed: {
     cBaseUrlIntegração () {
-      return `${process.env.URL_API}`
+      return `${process.env.URL_API}/metaWebhook`
     }
   },
   methods: {
+    formatarDataBrasil(data) {
+      const dataObjeto = new Date(data);
+      return format(dataObjeto, 'dd/MM/yyyy HH:mm:ss', { locale: ptBR });
+    },
     montarUrlIntegração() {
       return `${this.cBaseUrlIntegração}/${this.usuario.tenantId}`
     },
@@ -66,7 +78,6 @@ export default defineComponent({
           id: this.usuario.tenantId,
           metaToken: this.metaToken,
         })
-        // await AlterarTenantMeta(this.usuario.tenantId, data)
         this.$q.notify({
           type: 'positive',
           message: 'Configuração alterada!',
@@ -82,6 +93,7 @@ export default defineComponent({
       this.loading = true; 
       const { data } = await ListarTenantPorId(this.usuario.tenantId)
       this.metaToken = data[0].metaToken
+      this.webhookChecked = data[0].webhookChecked
     },
   },
   async mounted() {

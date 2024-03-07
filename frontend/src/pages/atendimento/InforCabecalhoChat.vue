@@ -321,7 +321,7 @@ export default {
     async listarFilas () {
       try {
         const { data } = await ListarFilas()
-        this.filas = data
+        this.filas = data.filter(fila => fila.isActive);
         this.modalTransferirTicket = true
         this.listarUsuarios()
       } catch (error) {

@@ -66,7 +66,7 @@
             </div>
           </div>
           <div class="col-12 q-py-md">
-            <div v-for="grupo in participantes" :key="grupo.groupId" class="blur-effect">
+            <div v-for="grupo in participantes" :key="grupo.groupId">
               <div><strong>Grupo ID:</strong> {{ grupo.groupId }}</div>
               <ul>
                 <li v-for="participante in grupo.participants" :key="participante">

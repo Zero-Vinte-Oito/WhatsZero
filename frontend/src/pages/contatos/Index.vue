@@ -88,7 +88,7 @@
       </template>
       <template v-slot:body-cell-profilePicUrl="props">
         <q-td>
-          <q-avatar style="border: 1px solid #9e9e9ea1 !important" class="blur-effect">
+          <q-avatar style="border: 1px solid #9e9e9ea1 !important">
             <q-icon
               name="mdi-account"
               size="1.5em"
@@ -123,7 +123,7 @@
             flat
             round
             icon="img:waba-logo.png"
-            @click="abrirModalCriarTicket(props.row, 'waba')"
+            @click="handleSaveTicket(props.row, 'waba')"
             v-if="props.row.number"
           /> -->
           <q-btn
@@ -156,7 +156,7 @@
       </template>
       <template v-slot:body-cell-number="props">
         <q-td>
-          <span v-if="props.row.number" class="blur-effect">
+          <span v-if="props.row.number">
             <a :href="getPhoneNumberLink(props.row.number)">
               {{ props.row.number }}
             </a>
@@ -165,14 +165,14 @@
       </template>
       <template v-slot:body-cell-email="props">
         <q-td>
-          <span v-if="props.row.email" class="blur-effect">
+          <span v-if="props.row.email">
             <a :href="'mailto:' + props.row.email">{{ props.row.email }}</a>
           </span>
         </q-td>
       </template>
       <template v-slot:body-cell-name="props">
         <q-td>
-          <span v-if="props.row.name" class="blur-effect">
+          <span v-if="props.row.name">
             {{ props.row.name }}
           </span>
         </q-td>
@@ -654,6 +654,7 @@ export default {
           this.$router.push({ name: 'chat', params: { ticketId: ticket.id } })
         } catch (error) {
           if (error.status === 409) {
+            console.log(error)
             const ticketAtual = JSON.parse(error.data.error)
             if(ticketAtual.whatsappId === null) {
               await AtualizarTicket(ticketAtual.id, {

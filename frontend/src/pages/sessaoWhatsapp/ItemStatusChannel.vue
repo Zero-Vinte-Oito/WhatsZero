@@ -48,12 +48,32 @@
           <span class="text-weight-medium"> Conexão estabelecida: {{item.tokenAPI}}</span>
         </q-item-label>
         <q-item-label v-if="item.status == 'CONNECTED' && item.type === 'whatsapp'">  
+          <span class="text-weight-medium">
+            Conexão estabelecida: 
+            <template v-if="item.number">{{ item.number }}</template>
+            <template v-else>Carregando dados...</template>
+          </span>
+        </q-item-label>
+        <q-item-label v-if="item.status == 'CONNECTED' && item.type === 'whatsapp'">
+          <template v-if="item.profilePic">
+            <img :src="item.profilePic" alt="Perfil" style="width: 30px; height: 30px; object-fit: cover; border-radius: 50%; vertical-align: middle; margin-right: 5px;">
+          </template>
+          <template v-else>
+            <span class="mdi mdi-account" style="font-size: 30px; height: 30px; width: 30px; border-radius: 50%; vertical-align: middle; margin-right: 5px;"></span>
+          </template>
+          <span class="text-weight-medium">
+            <template v-if="item.phone && item.phone.pushname">{{ item.phone.pushname }}</template>
+            <template v-else>Carregando dados...</template>
+          </span>
+        </q-item-label>
+
+        <!-- <q-item-label v-if="item.status == 'CONNECTED' && item.type === 'whatsapp'">  
           <span class="text-weight-medium"> Conexão estabelecida: {{item.number}}</span>
         </q-item-label>
         <q-item-label v-if="item.status == 'CONNECTED' && item.type === 'whatsapp'">
           <img :src="item.profilePic" alt="Perfil" style="width: 30px; height: 30px; object-fit: cover; border-radius: 50%; vertical-align: middle; margin-right: 5px;">
           <span class="text-weight-medium"> {{item.phone.pushname}}</span>
-        </q-item-label>
+        </q-item-label> -->
         <q-item-label v-if="['PAIRING', 'TIMEOUT'].includes(item.status)">
           <span class="text-weight-medium"> A conexão com o celular foi perdida </span>
           <span class="row col"> Certifique-se de que seu celular esteja conectado à internet e o WhatsApp esteja

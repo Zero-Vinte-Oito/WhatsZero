@@ -1,9 +1,9 @@
 <template>
   <div class="cc-card">
-    <img v-if="data.profilePicUrl" :src="data.profilePicUrl" alt="Profile Image" style="max-width: 80px; border-radius: 50%;" class="blur-effect">
-    <p class="blur-effect">{{ data.title }}</p>
+    <img v-if="data.profilePicUrl" :src="data.profilePicUrl" alt="Profile Image" style="max-width: 80px; border-radius: 50%;">
+    <p>{{ data.title }}</p>
     <!-- <a>{{ data.description }}</a> -->
-    <a :href="getPhoneNumberLink(data.description)" class="blur-effect">
+    <a :href="getPhoneNumberLink(data.description)">
               {{ data.description }}
             </a>
     <p>{{"#" + data.id }}</p>

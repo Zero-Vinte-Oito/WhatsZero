@@ -107,14 +107,7 @@
               dense
               outlined
               style="margin: 1px;"
-              > 
-              <template v-slot:option="scope">
-                  <q-item class="blur-effect">
-                    <q-item-section>
-                      {{ scope.opt.label }}
-                    </q-item-section>
-                  </q-item>
-                </template>
+              >
               </q-select>
           </div>
             

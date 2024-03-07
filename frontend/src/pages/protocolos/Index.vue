@@ -61,6 +61,11 @@
           </div>
         </q-td>
       </template>
+      <template v-slot:body-cell-ticketId="props">
+        <q-td :props="props">
+          <a :href="getTicketUrl(props.row.ticketId)">{{ props.row.ticketId }}</a>
+        </q-td>
+      </template>
       <template v-slot:body-cell-isActive="props">
         <q-td class="text-center">
           <q-icon
@@ -139,6 +144,10 @@ export default {
     formatUser(userId) {
       const user = this.usuarios.find(user => user.id === userId);
       return user ? user.name : 'Usuário não encontrado';
+    },
+    getTicketUrl(ticketId) {
+      const route = this.$router.resolve({ path: `/atendimento/${ticketId}` });
+      return route.href;
     },
     formatDate(dateString) {
       const date = new Date(dateString);
